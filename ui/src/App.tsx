@@ -24,11 +24,18 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return null;
+  if (isAuthenticated) return <Navigate to={Routes.Overview} replace />;
+  return <>{children}</>;
+}
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       {/* Public routes */}
-      <Route element={<PublicLayout />}>
+      <Route element={<RedirectIfAuthenticated><PublicLayout /></RedirectIfAuthenticated>}>
         <Route path={Routes.LandingPage} element={<LandingPage />} />
       </Route>
 
@@ -48,7 +55,7 @@ const router = createBrowserRouter(
         <Route path={Routes.Dividends} element={<DividendsPage />} />
       </Route>
 
-      <Route path="*" element={<Navigate to={Routes.LandingPage} replace />} />
+      {/* <Route path="*" element={<Navigate to={Routes.LandingPage} replace />} /> */}
     </>,
   ),
 );

@@ -7,7 +7,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" })
+    fetch("/auth/me", { credentials: "include" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data: User | null) => setUser(data))
       .catch(() => setUser(null))
@@ -15,11 +15,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = useCallback(() => {
-    window.location.href = `/api/auth/login?redirect=${encodeURIComponent(window.location.origin)}`;
+    window.location.href = '/auth/login';
   }, []);
 
   const signOut = useCallback(() => {
-    fetch("/api/auth/logout", {
+    fetch("/auth/logout", {
       method: "POST",
       credentials: "include",
     }).finally(() => setUser(null));
