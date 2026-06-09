@@ -13,6 +13,7 @@ import {
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Routes } from "../routes";
+import { useAuth } from "../hooks/useAuth";
 import { usePortfolioContext } from "../context/PortfolioContext";
 import { AddTransactionModal } from "./AddTransactionModal";
 import { AddDividendModal } from "./AddDividendModal";
@@ -27,7 +28,9 @@ const NAV_TABS = [
 export function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, signOut } = useAuth();
   const [addAnchor, setAddAnchor] = useState<null | HTMLElement>(null);
+  const [userAnchor, setUserAnchor] = useState<null | HTMLElement>(null);
 
   const {
     assets,
@@ -158,19 +161,28 @@ export function Layout() {
           </MenuItem>
         </Menu>
 
-        <IconButton size="small" sx={{ p: 0 }}>
-          <Avatar
-            sx={{
-              width: 32,
-              height: 32,
-              bgcolor: "#10a37f",
-              fontSize: "0.8rem",
-              fontWeight: 700,
-            }}
-          >
-            ZM
+        <IconButton size="small" sx={{ p: 0 }} onClick={(e) => setUserAnchor(e.currentTarget)}>
+          <Avatar sx={{ width: 32, height: 32, bgcolor: "#10a37f", fontSize: "0.8rem", fontWeight: 700 }}>
+            {user?.name?.[0]?.toUpperCase() ?? "?"}
           </Avatar>
         </IconButton>
+
+        <Menu
+          anchorEl={userAnchor}
+          open={Boolean(userAnchor)}
+          onClose={() => setUserAnchor(null)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          PaperProps={{ sx: { bgcolor: "#2f2f2f", border: "1px solid #404040", minWidth: 160, mt: 0.5 } }}
+        >
+          <MenuItem disabled sx={{ fontSize: "0.85rem", color: "#8e8ea0", opacity: "1 !important" }}>
+            {user?.email}
+          </MenuItem>
+          <Divider sx={{ borderColor: "#404040", my: 0.5 }} />
+          <MenuItem onClick={signOut} sx={{ fontSize: "0.9rem" }}>
+            Sign out
+          </MenuItem>
+        </Menu>
       </Box>
 
       {/* Page content */}
